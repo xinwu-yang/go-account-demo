@@ -11,7 +11,7 @@ type Base struct {
 	Message    string
 }
 
-func (obj *Base) String() string {
+func (obj Base) String() string {
 	returnData := make(map[string]interface{})
 	returnData["b"] = obj.Ok
 	if obj.Ok != 0 {

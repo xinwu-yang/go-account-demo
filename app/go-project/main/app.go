@@ -1,7 +1,12 @@
 package main
 
 import "github.com/astaxie/beego"
-import b "com.cxria/base"
+import (
+	b "com.cxria/base"
+	"com.cxria/app/go-project/main/configure"
+	"runtime"
+	"fmt"
+)
 
 type MainController struct {
 	beego.Controller
@@ -12,7 +17,12 @@ func (m *MainController) Get() {
 	m.Ctx.WriteString(j.String())
 }
 
+func init() {
+	configure.ConfigDataSource()
+}
+
 func main() {
+	fmt.Println("CPU Num:", runtime.NumCPU())
 	beego.Router("/", &MainController{})
 	beego.Run()
 }
