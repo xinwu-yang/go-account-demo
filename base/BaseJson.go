@@ -14,7 +14,7 @@ type Base struct {
 func (obj Base) String() string {
 	returnData := make(map[string]interface{})
 	returnData["b"] = obj.Ok
-	if obj.Ok != 0 {
+	if obj.ErrorCode != 0 {
 		returnData["i"] = obj.ErrorCode
 	}
 	if obj.Array != nil {

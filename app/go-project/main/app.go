@@ -6,14 +6,21 @@ import (
 	"com.cxria/app/go-project/main/configure"
 	"runtime"
 	"fmt"
+	"encoding/json"
 )
 
-type MainController struct {
+type TestController struct {
 	beego.Controller
 }
 
-func (m *MainController) Get() {
-	j := b.Base{Ok: 1, ErrorCode: 2}
+type Param struct {
+	Name string
+}
+
+func (m *TestController) Post() {
+	var body Param
+	json.Unmarshal(m.Ctx.Input.RequestBody, &body)
+	j := b.Base{Ok: 1, Content: body}
 	m.Ctx.WriteString(j.String())
 }
 
@@ -22,7 +29,9 @@ func init() {
 }
 
 func main() {
+	//项目配置在beego.BConfig中
+	beego.BConfig.CopyRequestBody = true
 	fmt.Println("CPU Num:", runtime.NumCPU())
-	beego.Router("/", &MainController{})
+	beego.Router("/", &TestController{})
 	beego.Run()
 }
