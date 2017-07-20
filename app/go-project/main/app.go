@@ -20,7 +20,7 @@ type Param struct {
 func (m *TestController) Post() {
 	var body Param
 	json.Unmarshal(m.Ctx.Input.RequestBody, &body)
-	j := b.Base{Ok: 1, Content: body}
+	j := b.Json{Ok: 1, Content: body}
 	m.Ctx.WriteString(j.String())
 }
 
