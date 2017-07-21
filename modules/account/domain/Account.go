@@ -24,11 +24,12 @@ type Mobile struct {
 }
 
 type Session struct {
-	SessionId int64 `orm:"auto"`
-	AccountId int64
-	UserAgent string
-	Token     string
-	LoginTime time.Time
+	SessionId  int64 `orm:"auto"`
+	AccountId  int64
+	UserAgent  string
+	Token      string
+	LoginTime  time.Time
+	LogoutTime time.Time
 }
 
 type User struct {

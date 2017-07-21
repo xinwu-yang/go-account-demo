@@ -59,7 +59,7 @@ func GetMobileByAccountId(accountId int64) domain.Mobile {
 	return mobile
 }
 
-func GetSessionByToken(token string) domain.Session {
+func GetSessionByToken(token string) (domain.Session, orm.Ormer) {
 	qb := base.GetQueryBuilder()
 	qb.Select("*").From("session").Where("token = ?")
 	o := orm.NewOrm()
@@ -67,9 +67,9 @@ func GetSessionByToken(token string) domain.Session {
 	err := o.Raw(qb.String(), token).QueryRow(&session)
 	if err != nil {
 		logrus.Error(err)
-		return nil
+		return nil, &o
 	}
-	return session
+	return session, &o
 }
 
 func GetVerification(code string, number string) domain.Verification {
@@ -96,4 +96,14 @@ func GetUserByNickName(nickName string) domain.User {
 		return nil
 	}
 	return user
+}
+
+func GetAccount(accountId int64) domain.Account {
+	o := orm.NewOrm()
+	account := domain.Account{AccountId: accountId}
+	err := o.Read(&account)
+	if &err == orm.ErrNoRows {
+		return nil
+	}
+	return account
 }
