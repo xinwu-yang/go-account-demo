@@ -1,6 +1,9 @@
 package base
 
-import j "encoding/json"
+import (
+	j "encoding/json"
+	"com.cxria/modules/code"
+)
 
 type Json struct {
 	Ok         int
@@ -32,4 +35,9 @@ func (json *Json) String() string {
 
 func GetJson() Json {
 	return Json{Ok: 0}
+}
+
+func (json *Json) SetError(errorKey string) {
+	json.ErrorCode = code.ErrorCode[errorKey]
+	json.Message = code.Message[errorKey]
 }

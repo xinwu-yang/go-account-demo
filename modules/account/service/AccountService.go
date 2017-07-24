@@ -3,12 +3,15 @@ package service
 import (
 	"com.cxria/base"
 	"com.cxria/modules/account/dao"
-	"com.cxria/modules/code"
 	"time"
 	"net/http"
 	"com.cxria/modules/account/domain"
 	"github.com/astaxie/beego/orm"
 	"com.cxria/utils/key"
+	"com.cxria/api/redis"
+	"com.cxria/utils/crypto"
+	"encoding/hex"
+	"fmt"
 )
 
 func GetAccount(accountId int64) base.Json {
@@ -25,8 +28,7 @@ func VerifySession(token string) base.Json {
 		json.Ok = base.SUCCESS
 		json.Content = session
 	} else {
-		json.ErrorCode = code.ErrorCode["NO_SESSION"]
-		json.Message = code.Message["NO_SESSION"]
+		json.SetError("NO_SESSION")
 	}
 	return json
 }
@@ -53,8 +55,20 @@ func AddSession(accountId int64, request http.Request, writer http.ResponseWrite
 	return json
 }
 
-func SendAuthEmail(email string, emailType int, accountId int64) base.Json{
+func SendAuthEmail(email string, emailType int, accountId int64) base.Json {
 	json := base.GetJson()
-
+	if !redis.Exists(email) {
+		json.SetError("SMS_TIME_NOT_EX")
+		return json
+	}
+	code := key.Generate(6)
+	emailSha := crypto.SHA256Hex(email)
+	k := []byte(emailSha[0:32])
+	i := []byte(emailSha[32:64])
+	hex.Decode(k, k)
+	hex.Decode(i, i)
+	aesCode,_ := crypto.AesEncrypt([]byte(code), k[:16], i[:16])
+	//params := "code=" + aesCode + "&email=" + email + "&type=" + emailType + "&a=" + accountId
+	fmt.Println(aesCode)
 	return json
 }

@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	redisApi "com.cxria/api/redis"
 )
 
 var (
@@ -15,6 +16,7 @@ var (
 func init() {
 	redisHost := ":6379"
 	Pool = newPool(redisHost)
+	redisApi.SetPool(Pool)
 	closeRedisPool()
 }
 

@@ -9,4 +9,6 @@ func init() {
 	ErrorCode["NO_SESSION"] = i
 	Message["NO_SESSION"] = "登陆会话不存在"
 	i++
+	ErrorCode["SMS_TIME_NOT_EX"] = i
+	Message["SMS_TIME_NOT_EX"] = "验证码发送限制"
 }
