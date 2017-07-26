@@ -47,6 +47,6 @@ type User struct {
 type Verification struct {
 	VerificationId int64  `orm:"auto"`
 	Code           string `orm:"size(6)"`
-	Mobile         *Mobile `orm:"rel(fk)"`
+	Contact        string
 	Expiry         time.Time
 }

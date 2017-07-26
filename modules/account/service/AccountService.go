@@ -12,6 +12,8 @@ import (
 	"com.cxria/utils/crypto"
 	"encoding/hex"
 	"fmt"
+	"strconv"
+	"com.cxria/utils/mail"
 )
 
 func GetAccount(accountId int64) base.Json {
@@ -67,8 +69,32 @@ func SendAuthEmail(email string, emailType int, accountId int64) base.Json {
 	i := []byte(emailSha[32:64])
 	hex.Decode(k, k)
 	hex.Decode(i, i)
-	aesCode,_ := crypto.AesEncrypt([]byte(code), k[:16], i[:16])
-	//params := "code=" + aesCode + "&email=" + email + "&type=" + emailType + "&a=" + accountId
-	fmt.Println(aesCode)
+	aesCode, _ := crypto.AesEncrypt([]byte(code), k[:16], i[:16])
+	aesCodeStr := hex.EncodeToString(aesCode)
+	params := "code=" + aesCodeStr + "&email=" + email + "&type=" + strconv.Itoa(emailType) + "&a=" + strconv.FormatInt(accountId, 10)
+	var contents map[string]interface{} = make(map[string]interface{})
+	contents["params"] = params
+	go func() {
+		fmt.Println(params)
+		mail.Send(email, params, "邮箱验证码")
+		mm, _ := time.ParseDuration("1m")
+		verification := domain.Verification{Code: code, Contact: email, Expiry: time.Now().Add(15 * mm)}
+		orm.NewOrm().Insert(verification)
+	}()
+	redis.SetEx(email, 60, "")
+	json.Ok = base.SUCCESS
+	return json
+}
+
+//还未实现发送手机短信
+
+func VerifyCode(code string, contact string) base.Json {
+	json := base.GetJson()
+	verification := dao.GetVerification(code, contact)
+	if &verification == nil {
+		json.SetError("EXPIRED_CODE")
+		return json
+	}
+	json.Ok = base.SUCCESS
 	return json
 }

@@ -11,4 +11,7 @@ func init() {
 	i++
 	ErrorCode["SMS_TIME_NOT_EX"] = i
 	Message["SMS_TIME_NOT_EX"] = "验证码发送限制"
+	i++
+	ErrorCode["EXPIRED_CODE"] = i
+	Message["EXPIRED_CODE"] = "验证码不存在或者已过期"
 }
