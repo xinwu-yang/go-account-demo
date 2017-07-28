@@ -11,9 +11,9 @@ import (
 	"com.cxria/api/redis"
 	"com.cxria/utils/crypto"
 	"encoding/hex"
-	"fmt"
 	"strconv"
 	"com.cxria/utils/mail"
+	"com.cxria/api/sms"
 )
 
 func GetAccount(accountId int64) base.Json {
@@ -75,10 +75,9 @@ func SendAuthEmail(email string, emailType int, accountId int64) base.Json {
 	var contents map[string]interface{} = make(map[string]interface{})
 	contents["params"] = params
 	go func() {
-		fmt.Println(params)
 		mail.Send(email, params, "邮箱验证码")
-		mm, _ := time.ParseDuration("1m")
-		verification := domain.Verification{Code: code, Contact: email, Expiry: time.Now().Add(15 * mm)}
+		mm, _ := time.ParseDuration(sms.OVERDUE + "m")
+		verification := domain.Verification{Code: code, Contact: email, Expiry: time.Now().Add(mm)}
 		orm.NewOrm().Insert(verification)
 	}()
 	redis.SetEx(email, 60, "")
@@ -86,7 +85,24 @@ func SendAuthEmail(email string, emailType int, accountId int64) base.Json {
 	return json
 }
 
-//还未实现发送手机短信
+func SendMobileCode(mobile string) base.Json {
+	json := base.GetJson()
+	if !redis.Exists(mobile) {
+		json.SetError("SMS_TIME_NOT_EX")
+		return json
+	}
+	code := key.Generate(6)
+	go func() {
+		if sms.SendByYzx(mobile, code) {
+			mm, _ := time.ParseDuration(sms.OVERDUE + "m")
+			verification := domain.Verification{Code: code, Contact: mobile, Expiry: time.Now().Add(mm)}
+			orm.NewOrm().Insert(verification)
+		}
+	}()
+	redis.SetEx(mobile, 60, "")
+	json.Ok = base.SUCCESS
+	return json
+}
 
 func VerifyCode(code string, contact string) base.Json {
 	json := base.GetJson()

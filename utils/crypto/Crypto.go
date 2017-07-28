@@ -6,6 +6,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"bytes"
+	"crypto/md5"
 )
 
 func SHA256Hex(text string) string {
@@ -28,7 +29,7 @@ func PKCS5UnPadding(origData []byte) []byte {
 	return origData[:(length - un_Padding)]
 }
 
-func AesEncrypt(origData, key []byte,iv []byte) ([]byte, error) {
+func AesEncrypt(origData, key []byte, iv []byte) ([]byte, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
@@ -57,4 +58,10 @@ func AesDecrypt(crypted, key []byte) ([]byte, error) {
 	origData = PKCS5UnPadding(origData)
 	// origData = ZeroUnPadding(origData)
 	return origData, nil
+}
+
+func MD5(plainText string) string {
+	h := md5.New()
+	h.Write([]byte(plainText))
+	return hex.EncodeToString(h.Sum(nil))
 }

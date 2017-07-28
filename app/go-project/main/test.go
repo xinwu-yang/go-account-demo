@@ -1,7 +1,10 @@
 package main
 
-import "com.cxria/utils/mail"
+import (
+	"fmt"
+	"time"
+)
 
 func main() {
-	mail.Send("summng@qq.com","<p>heiheihei</p>","测试")
+	fmt.Println(time.ParseDuration("15m"))
 }
