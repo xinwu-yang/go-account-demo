@@ -2,9 +2,12 @@ package main
 
 import (
 	"fmt"
-	"time"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func main() {
-	fmt.Println(time.ParseDuration("15m"))
+	pwd := []byte("yxw123456")
+	hashedPassword, _ := bcrypt.GenerateFromPassword(pwd, bcrypt.DefaultCost)
+	fmt.Println(string(hashedPassword))
+	fmt.Println(bcrypt.CompareHashAndPassword(hashedPassword,pwd))
 }

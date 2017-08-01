@@ -14,4 +14,13 @@ func init() {
 	i++
 	ErrorCode["EXPIRED_CODE"] = i
 	Message["EXPIRED_CODE"] = "验证码不存在或者已过期"
+	i++
+	ErrorCode["ABNORMAL_ACCOUNT"] = i
+	Message["ABNORMAL_ACCOUNT"] = "账号已被禁用"
+	i++
+	ErrorCode["PASSWORD_NOT_AES"] = i
+	Message["PASSWORD_NOT_AES"] = "密码加密格式错误"
+	i++
+	ErrorCode["NO_ACCOUNT"] = i
+	Message["NO_ACCOUNT"] = "账号不存在"
 }

@@ -14,6 +14,8 @@ import (
 	"strconv"
 	"com.cxria/utils/mail"
 	"com.cxria/api/sms"
+	"golang.org/x/crypto/bcrypt"
+	"com.cxria/utils/str"
 )
 
 func GetAccount(accountId int64) base.Json {
@@ -111,6 +113,79 @@ func VerifyCode(code string, contact string) base.Json {
 		json.SetError("EXPIRED_CODE")
 		return json
 	}
+	json.Ok = base.SUCCESS
+	return json
+}
+
+func createSession(accountId int64, request http.Request, writer http.ResponseWriter) base.Json {
+	json := AddSession(accountId, request, writer)
+	if json.Ok == base.SUCCESS {
+		user := dao.GetUser(accountId)
+		var returnData = make(map[string]interface{})
+		returnData["user"] = user
+		json.Content = user
+	}
+	return json
+}
+
+func checkPassword(json *base.Json, account domain.Account, password, contact string, request http.Request, writer http.ResponseWriter) base.Json {
+	if account.State == 1 {
+		json.SetError("ABNORMAL_ACCOUNT")
+		return *json
+	}
+	contactSha256 := crypto.SHA256Hex(contact)
+	k := []byte(contactSha256[0:32])
+	hex.Decode(k, k)
+	pwd, err := crypto.AesDecrypt([]byte(password), k[:16])
+	if err != nil {
+		json.SetError("PASSWORD_NOT_AES")
+		return *json
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(account.Password), pwd)
+	if err != nil {
+		json.SetError("WRONG_PASSWORD")
+		return *json
+	}
+	return createSession(account.AccountId, request, writer)
+}
+
+func LoginWithPassword(contact, password, areaCode string, request http.Request, writer http.ResponseWriter) base.Json {
+	json := base.GetJson()
+	var accountId int64 = 0
+	var isAuth int = 0
+	var mobile domain.Mobile
+	if str.IsEmpty(areaCode) {
+		mobile = dao.GetMobileByNumber(contact)
+	} else {
+		mobile = dao.GetMobileByNumber(areaCode + contact)
+	}
+	if &mobile != nil {
+		accountId = mobile.AccountId
+		isAuth = mobile.Auth
+	} else {
+		email := dao.GetEmailByAddress(contact)
+		if &email != nil {
+			accountId = email.AccountId
+			isAuth = email.Auth
+		} else {
+			user := dao.GetUserByNickName(contact)
+			if &user != nil {
+				accountId = user.AccountId
+				isAuth = 1
+			}
+		}
+	}
+	if accountId == 0 || isAuth == 0 {
+		json.SetError("NO_ACCOUNT")
+		return json
+	}
+	account := dao.GetAccount(accountId)
+	return checkPassword(&json, account, password, contact, request, writer)
+}
+
+func GetUser(accountId int64) base.Json {
+	json := base.GetJson()
+	json.Content = dao.GetUser(accountId)
 	json.Ok = base.SUCCESS
 	return json
 }

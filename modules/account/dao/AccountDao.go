@@ -107,3 +107,13 @@ func GetAccount(accountId int64) domain.Account {
 	}
 	return account
 }
+
+func GetUser(accountId int64) domain.User {
+	o := orm.NewOrm()
+	user := domain.User{AccountId: accountId}
+	err := o.Read(&user)
+	if &err == orm.ErrNoRows {
+		return nil
+	}
+	return user
+}
