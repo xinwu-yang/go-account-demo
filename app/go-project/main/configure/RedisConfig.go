@@ -14,7 +14,7 @@ var (
 )
 
 func init() {
-	redisHost := ":6379"
+	redisHost := "127.0.0.1:6379"
 	Pool = newPool(redisHost)
 	redisApi.SetPool(Pool)
 	closeRedisPool()

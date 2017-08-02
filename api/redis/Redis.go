@@ -11,7 +11,7 @@ func SetPool(redisPool *redis.Pool) {
 	Pool = *redisPool
 }
 
-func Get(key string) string {
+func Get(key string) *string {
 	if &Pool != nil {
 		conn := Pool.Get()
 		defer conn.Close()
@@ -21,7 +21,7 @@ func Get(key string) string {
 			logrus.Error(err)
 			return nil
 		}
-		return value
+		return &value
 	}
 	return nil
 }

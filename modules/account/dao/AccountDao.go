@@ -15,7 +15,7 @@ func GetEmailByAddress(address string) domain.Email {
 	err := o.Raw(qb.String(), address).QueryRow(&email)
 	if err != nil {
 		logrus.Error(err)
-		return nil
+		return domain.Email{}
 	}
 	return email
 }
@@ -28,7 +28,7 @@ func GetEmailByAccountId(accountId int64) domain.Email {
 	err := o.Raw(qb.String(), accountId).QueryRow(&email)
 	if err != nil {
 		logrus.Error(err)
-		return nil
+		return domain.Email{}
 	}
 	return email
 }
@@ -41,7 +41,7 @@ func GetMobileByNumber(number string) domain.Mobile {
 	err := o.Raw(qb.String(), number).QueryRow(&mobile)
 	if err != nil {
 		logrus.Error(err)
-		return nil
+		return domain.Mobile{}
 	}
 	return mobile
 }
@@ -54,7 +54,7 @@ func GetMobileByAccountId(accountId int64) domain.Mobile {
 	err := o.Raw(qb.String(), accountId).QueryRow(&mobile)
 	if err != nil {
 		logrus.Error(err)
-		return nil
+		return domain.Mobile{}
 	}
 	return mobile
 }
@@ -67,9 +67,9 @@ func GetSessionByToken(token string) (domain.Session, orm.Ormer) {
 	err := o.Raw(qb.String(), token).QueryRow(&session)
 	if err != nil {
 		logrus.Error(err)
-		return nil, &o
+		return domain.Session{}, o
 	}
-	return session, &o
+	return session, o
 }
 
 func GetVerification(code string, number string) domain.Verification {
@@ -80,7 +80,7 @@ func GetVerification(code string, number string) domain.Verification {
 	err := o.Raw(qb.String(), code, number).QueryRow(&verification)
 	if err != nil {
 		logrus.Error(err)
-		return nil
+		return domain.Verification{}
 	}
 	return verification
 }
@@ -93,7 +93,7 @@ func GetUserByNickName(nickName string) domain.User {
 	err := o.Raw(qb.String(), nickName).QueryRow(&user)
 	if err != nil {
 		logrus.Error(err)
-		return nil
+		return domain.User{}
 	}
 	return user
 }
@@ -102,8 +102,8 @@ func GetAccount(accountId int64) domain.Account {
 	o := orm.NewOrm()
 	account := domain.Account{AccountId: accountId}
 	err := o.Read(&account)
-	if &err == orm.ErrNoRows {
-		return nil
+	if err == orm.ErrNoRows {
+		return domain.Account{}
 	}
 	return account
 }
@@ -112,8 +112,8 @@ func GetUser(accountId int64) domain.User {
 	o := orm.NewOrm()
 	user := domain.User{AccountId: accountId}
 	err := o.Read(&user)
-	if &err == orm.ErrNoRows {
-		return nil
+	if err == orm.ErrNoRows {
+		return domain.User{}
 	}
 	return user
 }

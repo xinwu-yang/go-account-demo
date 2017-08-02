@@ -40,7 +40,7 @@ func VerifySession(token string) base.Json {
 func ArchiveSession(token string) base.Json {
 	json := base.GetJson()
 	session, o := dao.GetSessionByToken(token)
-	if &session != nil {
+	if session.SessionId != 0 {
 		session.LogoutTime = time.Now()
 		o.Update(&session)
 	}
@@ -52,7 +52,7 @@ func AddSession(accountId int64, request http.Request, writer http.ResponseWrite
 	json := base.GetJson()
 	token := key.Generate(32)
 	var session = domain.Session{AccountId: accountId, Token: token, UserAgent: request.UserAgent()}
-	orm.NewOrm().Insert(session)
+	orm.NewOrm().Insert(&session)
 	cookie := http.Cookie{Name: "token", Value: token, Path: "/", MaxAge: 15 * 24 * 60 * 60}
 	http.SetCookie(writer, &cookie)
 	json.Ok = base.SUCCESS
@@ -61,7 +61,7 @@ func AddSession(accountId int64, request http.Request, writer http.ResponseWrite
 
 func SendAuthEmail(email string, emailType int, accountId int64) base.Json {
 	json := base.GetJson()
-	if !redis.Exists(email) {
+	if redis.Exists(email) {
 		json.SetError("SMS_TIME_NOT_EX")
 		return json
 	}
@@ -80,7 +80,7 @@ func SendAuthEmail(email string, emailType int, accountId int64) base.Json {
 		mail.Send(email, params, "邮箱验证码")
 		mm, _ := time.ParseDuration(sms.OVERDUE + "m")
 		verification := domain.Verification{Code: code, Contact: email, Expiry: time.Now().Add(mm)}
-		orm.NewOrm().Insert(verification)
+		orm.NewOrm().Insert(&verification)
 	}()
 	redis.SetEx(email, 60, "")
 	json.Ok = base.SUCCESS
@@ -98,7 +98,7 @@ func SendMobileCode(mobile string) base.Json {
 		if sms.SendByYzx(mobile, code) {
 			mm, _ := time.ParseDuration(sms.OVERDUE + "m")
 			verification := domain.Verification{Code: code, Contact: mobile, Expiry: time.Now().Add(mm)}
-			orm.NewOrm().Insert(verification)
+			orm.NewOrm().Insert(&verification)
 		}
 	}()
 	redis.SetEx(mobile, 60, "")

@@ -7,6 +7,7 @@ import (
 	"runtime"
 	"fmt"
 	"encoding/json"
+	"com.cxria/app/go-project/main/routers"
 )
 
 type TestController struct {
@@ -26,12 +27,19 @@ func (m *TestController) Post() {
 
 func init() {
 	configure.ConfigDataSource()
+	routers.Config()
 }
 
 func main() {
 	//项目配置在beego.BConfig中
-	beego.BConfig.CopyRequestBody = true
 	fmt.Println("CPU Num:", runtime.NumCPU())
-	beego.Router("/", &TestController{})
+	//beego.Router("/", &TestController{})
+	beego.BConfig.AppName = "GoPro"
+	beego.BConfig.RunMode = "dev"
+	beego.BConfig.CopyRequestBody = true
+	beego.BConfig.WebConfig.AutoRender = false
+	beego.BConfig.WebConfig.EnableDocs = true
+	beego.BConfig.WebConfig.DirectoryIndex = true
+	beego.BConfig.WebConfig.StaticDir["/swagger"] = "/home/xinwuy/GoglandProjects/src/com.cxria/app/go-project/main/swagger"
 	beego.Run()
 }

@@ -1,0 +1,42 @@
+swagger: "2.0"
+info:
+  title: Go Pro API
+  description: 这是一个基于Golang开发的Web服务器
+  version: 1.0.0
+  termsOfService: NO terms of service
+  contact:
+    email: summng@qq.com
+  license:
+    name: The Apache License, Version 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+basePath: /v1
+paths:
+  /account/sendAuthEmail:
+    post:
+      tags:
+      - account
+      description: 发送认证邮件和忘记密码
+      operationId: AccountController.发送邮件
+      parameters:
+      - in: body
+        name: body
+        description: 账号Id<br>邮件地址<br>邮件类型：1=邮箱认证，2=忘记密码
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.SendAuthEmailParam'
+      responses:
+        "200":
+          description: '{string} {"b" : 1}'
+definitions:
+  controllers.SendAuthEmailParam:
+    title: SendAuthEmailParam
+    type: object
+    properties:
+      AccountId:
+        type: integer
+        format: int64
+      Email:
+        type: string
+      EmailType:
+        type: integer
+        format: int64

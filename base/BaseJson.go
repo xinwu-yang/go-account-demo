@@ -3,6 +3,7 @@ package base
 import (
 	j "encoding/json"
 	"com.cxria/modules/code"
+	"com.cxria/utils/str"
 )
 
 type Json struct {
@@ -28,6 +29,9 @@ func (json *Json) String() string {
 	}
 	if json.ErrorArray != nil {
 		returnData["ec"] = json.ErrorArray
+	}
+	if str.IsEmpty(json.Message) {
+		returnData["msg"] = json.Message
 	}
 	b, _ := j.Marshal(returnData)
 	return string(b)
