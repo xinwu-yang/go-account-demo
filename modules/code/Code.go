@@ -23,4 +23,10 @@ func init() {
 	i++
 	ErrorCode["NO_ACCOUNT"] = i
 	Message["NO_ACCOUNT"] = "账号不存在"
+	i++
+	ErrorCode["NO_TOKEN"] = i
+	Message["NO_TOKEN"] = "登陆令牌不存在或者已经过期"
+	i++
+	ErrorCode["ABNORMAL_ACCOUNT"] = i
+	Message["ABNORMAL_ACCOUNT"] = "账号已被禁用"
 }

@@ -51,7 +51,7 @@ func ArchiveSession(token string) base.Json {
 func AddSession(accountId int64, request http.Request, writer http.ResponseWriter) base.Json {
 	json := base.GetJson()
 	token := key.Generate(32)
-	var session = domain.Session{AccountId: accountId, Token: token, UserAgent: request.UserAgent()}
+	var session = domain.Session{AccountId: accountId, Token: token, UserAgent: request.UserAgent(), LoginTime: time.Now()}
 	orm.NewOrm().Insert(&session)
 	cookie := http.Cookie{Name: "token", Value: token, Path: "/", MaxAge: 15 * 24 * 60 * 60}
 	http.SetCookie(writer, &cookie)
@@ -109,7 +109,7 @@ func SendMobileCode(mobile string) base.Json {
 func VerifyCode(code string, contact string) base.Json {
 	json := base.GetJson()
 	verification := dao.GetVerification(code, contact)
-	if &verification == nil {
+	if &verification == nil || verification.Expiry.After(time.Now()) {
 		json.SetError("EXPIRED_CODE")
 		return json
 	}

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"encoding/json"
 	"com.cxria/app/go-project/main/routers"
+	"com.cxria/app/go-project/main/filters"
 )
 
 type TestController struct {
@@ -28,6 +29,7 @@ func (m *TestController) Post() {
 func init() {
 	configure.ConfigDataSource()
 	routers.Config()
+	filters.Config()
 }
 
 func main() {

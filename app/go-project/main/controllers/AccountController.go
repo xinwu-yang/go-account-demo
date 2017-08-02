@@ -28,7 +28,6 @@ func (a *AccountController) URLMapping() {
 // @Success 200  {string} {"b" : 1}
 // @router /sendAuthEmail [post]
 func (a *AccountController) SendAuthEmail() {
-	a.Ctx.ResponseWriter.Header().Add("Content-Type", "application/json;charset=UTF-8")
 	var param SendAuthEmailParam
 	json.Unmarshal(a.Ctx.Input.RequestBody, &param)
 	valid := validation.Validation{}

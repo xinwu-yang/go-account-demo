@@ -10,11 +10,9 @@ package routers
 import (
 	"github.com/astaxie/beego"
 	"com.cxria/app/go-project/main/controllers"
-	"fmt"
 )
 
 func Config() {
-	fmt.Println("Test")
 	ns := beego.NewNamespace("/v1",
 		beego.NSNamespace("/account", beego.NSInclude(
 			&controllers.AccountController{},
