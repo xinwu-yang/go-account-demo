@@ -87,7 +87,7 @@ func GetVerification(code string, number string) domain.Verification {
 
 func GetUserByNickName(nickName string) domain.User {
 	qb := base.GetQueryBuilder()
-	qb.Select("*").From("user").Where("nickName = ?")
+	qb.Select("*").From("user").Where("nick_name = ?")
 	o := orm.NewOrm()
 	var user domain.User
 	err := o.Raw(qb.String(), nickName).QueryRow(&user)

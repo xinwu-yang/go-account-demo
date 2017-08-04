@@ -48,10 +48,10 @@ func ArchiveSession(token string) base.Json {
 	return json
 }
 
-func AddSession(accountId int64, request http.Request, writer http.ResponseWriter) base.Json {
+func addSession(accountId int64, userAgent string, writer http.ResponseWriter) base.Json {
 	json := base.GetJson()
 	token := key.Generate(32)
-	var session = domain.Session{AccountId: accountId, Token: token, UserAgent: request.UserAgent(), LoginTime: time.Now()}
+	var session = domain.Session{AccountId: accountId, Token: token, UserAgent: userAgent, LoginTime: time.Now()}
 	orm.NewOrm().Insert(&session)
 	cookie := http.Cookie{Name: "token", Value: token, Path: "/", MaxAge: 15 * 24 * 60 * 60}
 	http.SetCookie(writer, &cookie)
@@ -106,7 +106,7 @@ func SendMobileCode(mobile string) base.Json {
 	return json
 }
 
-func VerifyCode(code string, contact string) base.Json {
+func verifyCode(code string, contact string) base.Json {
 	json := base.GetJson()
 	verification := dao.GetVerification(code, contact)
 	if verification.VerificationId == 0 || verification.Expiry.After(time.Now()) {
@@ -117,8 +117,8 @@ func VerifyCode(code string, contact string) base.Json {
 	return json
 }
 
-func createSession(accountId int64, request http.Request, writer http.ResponseWriter) base.Json {
-	json := AddSession(accountId, request, writer)
+func createSession(accountId int64, userAgent string, writer http.ResponseWriter) base.Json {
+	json := addSession(accountId, userAgent, writer)
 	if json.Ok == base.SUCCESS {
 		user := dao.GetUser(accountId)
 		var returnData = make(map[string]interface{})
@@ -128,7 +128,7 @@ func createSession(accountId int64, request http.Request, writer http.ResponseWr
 	return json
 }
 
-func checkPassword(json *base.Json, account domain.Account, password, contact string, request http.Request, writer http.ResponseWriter) base.Json {
+func checkPassword(json *base.Json, account domain.Account, password, contact string, request *http.Request, writer http.ResponseWriter) base.Json {
 	if account.State == 1 {
 		json.SetError("ABNORMAL_ACCOUNT")
 		return *json
@@ -146,10 +146,31 @@ func checkPassword(json *base.Json, account domain.Account, password, contact st
 		json.SetError("WRONG_PASSWORD")
 		return *json
 	}
-	return createSession(account.AccountId, request, writer)
+	return createSession(account.AccountId, request.UserAgent(), writer)
 }
 
-func LoginWithPassword(contact, password, areaCode string, request http.Request, writer http.ResponseWriter) base.Json {
+func createAccount(account, password string) domain.Account {
+	var a domain.Account
+	if str.IsEmpty(password) {
+		a = domain.Account{Password: string(bcrypt.GenerateFromPassword([]byte(account), bcrypt.DefaultCost)), State: 0}
+	} else {
+		shaAccount := crypto.SHA256Hex(account)
+		k := []byte(shaAccount[0:32])
+		i := []byte(shaAccount[32:64])
+		hex.Decode(k, k)
+		hex.Decode(i, i)
+		aesPwd, _ := hex.DecodeString(password)
+		plainText, err := crypto.AesDecrypt(aesPwd, k[:16])
+		if err != nil {
+			return a
+		}
+		a = domain.Account{Password: string(bcrypt.GenerateFromPassword([]byte(plainText), bcrypt.DefaultCost)), State: 0}
+	}
+	orm.NewOrm().Insert(&a)
+	return a
+}
+
+func LoginWithPassword(contact, password, areaCode string, request *http.Request, writer http.ResponseWriter) base.Json {
 	json := base.GetJson()
 	var accountId int64 = 0
 	var isAuth int = 0
@@ -187,5 +208,27 @@ func GetUser(accountId int64) base.Json {
 	json := base.GetJson()
 	json.Content = dao.GetUser(accountId)
 	json.Ok = base.SUCCESS
+	return json
+}
+
+func LoginWithCode(mobile, code string, request *http.Request, writer http.ResponseWriter) base.Json {
+	json := verifyCode(code, mobile)
+	if json.Ok == base.SUCCESS {
+		var account domain.Account
+		mobileAccount := dao.GetMobileByNumber(mobile)
+		if mobileAccount.AccountId == 0 {
+			account = createAccount(mobile, "")
+		} else if mobileAccount.Auth == 0 {
+			json.SetError("CONTACT_NOT_AUTH")
+			return json
+		} else {
+			account := dao.GetAccount(mobileAccount.AccountId)
+			if account.AccountId == 0 || account.State == 1 {
+				json.SetError("ABNORMAL_ACCOUNT")
+				return json
+			}
+		}
+		json = createSession(account.AccountId, request.UserAgent(), writer)
+	}
 	return json
 }

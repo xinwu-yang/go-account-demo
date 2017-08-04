@@ -22,9 +22,16 @@ type SendSmsCodeParam struct {
 	Mobile string `valid:"Mobile; MaxSize(100)"`
 }
 
+type LoginParam struct {
+	Account  string `valid:"MaxSize(100)"`
+	Password string `valid:"Length(32)"`
+	AreaCode string
+}
+
 func (a *AccountController) URLMapping() {
 	a.Mapping("sendAuthEmail", a.SendAuthEmail)
 	a.Mapping("sendSmsCode", a.SendSmsCode)
+	a.Mapping("login", a.Login)
 }
 
 // @Title 发送邮件
@@ -64,5 +71,25 @@ func (a *AccountController) SendSmsCode() {
 		return
 	}
 	j := service.SendMobileCode(param.Mobile)
+	a.Ctx.WriteString(j.String())
+}
+
+// @Title 登录
+// @Description 手机/邮箱/昵称登录
+// @Param   body body     LoginParam true "账号<br>密码<br>区号"
+// @Success 200  {string} {"b" : 1}
+// @router /login [post]
+func (a *AccountController) Login() {
+	var param LoginParam
+	json.Unmarshal(a.Ctx.Input.RequestBody, &param)
+	valid := validation.Validation{}
+	b, _ := valid.Valid(&param)
+	if !b {
+		j := base.GetJson()
+		j.ErrorArray = valid.Errors
+		a.Ctx.WriteString(j.String())
+		return
+	}
+	j := service.LoginWithPassword(param.Account, param.Password, param.AreaCode, a.Ctx.Request, a.Ctx.ResponseWriter.ResponseWriter)
 	a.Ctx.WriteString(j.String())
 }

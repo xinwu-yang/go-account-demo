@@ -29,4 +29,7 @@ func init() {
 	i++
 	ErrorCode["ABNORMAL_ACCOUNT"] = i
 	Message["ABNORMAL_ACCOUNT"] = "账号已被禁用"
+	i++
+	ErrorCode["CONTACT_NOT_AUTH"] = i
+	Message["CONTACT_NOT_AUTH"] = "账号没有认证"
 }

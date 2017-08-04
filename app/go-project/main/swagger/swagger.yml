@@ -11,6 +11,22 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
 basePath: /v1
 paths:
+  /account/login:
+    post:
+      tags:
+      - account
+      description: 手机/邮箱/昵称登录
+      operationId: AccountController.登录
+      parameters:
+      - in: body
+        name: body
+        description: 账号<br>密码<br>区号
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.LoginParam'
+      responses:
+        "200":
+          description: '{string} {"b" : 1}'
   /account/sendAuthEmail:
     post:
       tags:
@@ -44,6 +60,16 @@ paths:
         "200":
           description: '{string} {"b" : 1}'
 definitions:
+  controllers.LoginParam:
+    title: LoginParam
+    type: object
+    properties:
+      Account:
+        type: string
+      AreaCode:
+        type: string
+      Password:
+        type: string
   controllers.SendAuthEmailParam:
     title: SendAuthEmailParam
     type: object

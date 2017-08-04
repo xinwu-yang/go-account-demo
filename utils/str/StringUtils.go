@@ -1,7 +1,7 @@
 package str
 
 func IsEmpty(text string) bool {
-	if &text == nil || text == "" {
+	if text == "" {
 		return false
 	}
 	return true

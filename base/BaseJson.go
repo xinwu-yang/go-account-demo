@@ -42,6 +42,7 @@ func GetJson() Json {
 }
 
 func (json *Json) SetError(errorKey string) {
+	json.Ok = 0
 	json.ErrorCode = code.ErrorCode[errorKey]
 	json.Message = code.Message[errorKey]
 }
