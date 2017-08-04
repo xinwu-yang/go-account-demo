@@ -3,9 +3,9 @@ package controllers
 import (
 	"github.com/astaxie/beego"
 	"com.cxria/modules/account/service"
-	"github.com/astaxie/beego/validation"
-	"encoding/json"
 	"com.cxria/base"
+	"encoding/json"
+	"github.com/astaxie/beego/validation"
 )
 
 type AccountController struct {
@@ -18,8 +18,13 @@ type SendAuthEmailParam struct {
 	AccountId int `valid:"Min(1); Max(999999999)"`
 }
 
+type SendSmsCodeParam struct {
+	Mobile string `valid:"Mobile; MaxSize(100)"`
+}
+
 func (a *AccountController) URLMapping() {
 	a.Mapping("sendAuthEmail", a.SendAuthEmail)
+	a.Mapping("sendSmsCode", a.SendSmsCode)
 }
 
 // @Title 发送邮件
@@ -33,11 +38,31 @@ func (a *AccountController) SendAuthEmail() {
 	valid := validation.Validation{}
 	b, _ := valid.Valid(&param)
 	if !b {
-		baseJson := base.GetJson()
-		baseJson.ErrorArray = valid.Errors
-		a.Ctx.WriteString(baseJson.String())
+		j := base.GetJson()
+		j.ErrorArray = valid.Errors
+		a.Ctx.WriteString(j.String())
 		return
 	}
 	j := service.SendAuthEmail(param.Email, param.EmailType, int64(param.AccountId))
+	a.Ctx.WriteString(j.String())
+}
+
+// @Title 发送短信验证码
+// @Description 发送短信验证码
+// @Param   body body     SendSmsCodeParam true "手机号码"
+// @Success 200  {string} {"b" : 1}
+// @router /sendSmsCode [post]
+func (a *AccountController) SendSmsCode() {
+	var param SendSmsCodeParam
+	json.Unmarshal(a.Ctx.Input.RequestBody, &param)
+	valid := validation.Validation{}
+	b, _ := valid.Valid(&param)
+	if !b {
+		j := base.GetJson()
+		j.ErrorArray = valid.Errors
+		a.Ctx.WriteString(j.String())
+		return
+	}
+	j := service.SendMobileCode(param.Mobile)
 	a.Ctx.WriteString(j.String())
 }

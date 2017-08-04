@@ -27,6 +27,22 @@ paths:
       responses:
         "200":
           description: '{string} {"b" : 1}'
+  /account/sendSmsCode:
+    post:
+      tags:
+      - account
+      description: 发送短信验证码
+      operationId: AccountController.发送短信验证码
+      parameters:
+      - in: body
+        name: body
+        description: 手机号码
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.SendSmsCodeParam'
+      responses:
+        "200":
+          description: '{string} {"b" : 1}'
 definitions:
   controllers.SendAuthEmailParam:
     title: SendAuthEmailParam
@@ -40,3 +56,9 @@ definitions:
       EmailType:
         type: integer
         format: int64
+  controllers.SendSmsCodeParam:
+    title: SendSmsCodeParam
+    type: object
+    properties:
+      Mobile:
+        type: string

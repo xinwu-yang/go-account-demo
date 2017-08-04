@@ -13,11 +13,11 @@ import (
 //API过滤器重写Content-Type
 var apiFilter = func(ctx *context.Context) {
 	ctx.Output.Header("Content-Type", "application/json;charset=UTF-8")
+	ctx.Output.Header("Access-Control-Allow-Origin", "*")
 }
 
 //用户相关过滤器
 var userFilter = func(ctx *context.Context) {
-	ctx.ResponseWriter.Header().Add("", "")
 	json := base.GetJson()
 	token := ctx.GetCookie("t")
 	if str.IsEmpty(token) {
@@ -25,8 +25,8 @@ var userFilter = func(ctx *context.Context) {
 		ctx.WriteString(json.String())
 	}
 	session := service.VerifySession(token).Content.(domain.Session)
-	dd, _ := time.ParseDuration("15d")
-	if session.SessionId == 0 || session.LogoutTime.Add(dd).Before(time.Now()) || session.LogoutTime == session.LoginTime {
+	dd, _ := time.ParseDuration("360h")
+	if session.SessionId == 0 || session.LoginTime.Add(dd).Before(time.Now()) || session.LogoutTime.Year() == 1 {
 		json.SetError("NO_TOKEN")
 		ctx.WriteString(json.String())
 	}

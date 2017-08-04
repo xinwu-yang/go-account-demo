@@ -28,7 +28,7 @@ func GetAccount(accountId int64) base.Json {
 func VerifySession(token string) base.Json {
 	json := base.GetJson()
 	session, _ := dao.GetSessionByToken(token)
-	if &session != nil {
+	if session.SessionId != 0 {
 		json.Ok = base.SUCCESS
 		json.Content = session
 	} else {
@@ -89,7 +89,7 @@ func SendAuthEmail(email string, emailType int, accountId int64) base.Json {
 
 func SendMobileCode(mobile string) base.Json {
 	json := base.GetJson()
-	if !redis.Exists(mobile) {
+	if redis.Exists(mobile) {
 		json.SetError("SMS_TIME_NOT_EX")
 		return json
 	}
@@ -109,7 +109,7 @@ func SendMobileCode(mobile string) base.Json {
 func VerifyCode(code string, contact string) base.Json {
 	json := base.GetJson()
 	verification := dao.GetVerification(code, contact)
-	if &verification == nil || verification.Expiry.After(time.Now()) {
+	if verification.VerificationId == 0 || verification.Expiry.After(time.Now()) {
 		json.SetError("EXPIRED_CODE")
 		return json
 	}
@@ -159,17 +159,17 @@ func LoginWithPassword(contact, password, areaCode string, request http.Request,
 	} else {
 		mobile = dao.GetMobileByNumber(areaCode + contact)
 	}
-	if &mobile != nil {
+	if mobile.AccountId != 0 {
 		accountId = mobile.AccountId
 		isAuth = mobile.Auth
 	} else {
 		email := dao.GetEmailByAddress(contact)
-		if &email != nil {
+		if email.AccountId != 0 {
 			accountId = email.AccountId
 			isAuth = email.Auth
 		} else {
 			user := dao.GetUserByNickName(contact)
-			if &user != nil {
+			if user.AccountId != 0 {
 				accountId = user.AccountId
 				isAuth = 1
 			}
