@@ -51,7 +51,7 @@ func ArchiveSession(token string) base.Json {
 func addSession(accountId int64, userAgent string, writer http.ResponseWriter) base.Json {
 	json := base.GetJson()
 	token := key.Generate(32)
-	var session = domain.Session{AccountId: accountId, Token: token, UserAgent: userAgent, LoginTime: time.Now()}
+	var session = domain.Session{AccountId: accountId, Token: token, UserAgent: userAgent}
 	orm.NewOrm().Insert(&session)
 	cookie := http.Cookie{Name: "token", Value: token, Path: "/", MaxAge: 15 * 24 * 60 * 60}
 	http.SetCookie(writer, &cookie)
@@ -109,7 +109,7 @@ func SendMobileCode(mobile string) base.Json {
 func verifyCode(code string, contact string) base.Json {
 	json := base.GetJson()
 	verification := dao.GetVerification(code, contact)
-	if verification.VerificationId == 0 || verification.Expiry.After(time.Now()) {
+	if verification.VerificationId == 0 || verification.Expiry.Before(time.Now()) {
 		json.SetError("EXPIRED_CODE")
 		return json
 	}
@@ -135,8 +135,10 @@ func checkPassword(json *base.Json, account domain.Account, password, contact st
 	}
 	contactSha256 := crypto.SHA256Hex(contact)
 	k := []byte(contactSha256[0:32])
+	i := []byte(contactSha256[32:64])
 	hex.Decode(k, k)
-	pwd, err := crypto.AesDecrypt([]byte(password), k[:16])
+	hex.Decode(i, i)
+	pwd, err := crypto.AesDecrypt([]byte(password), k[:16], i[:16])
 	if err != nil {
 		json.SetError("PASSWORD_NOT_AES")
 		return *json
@@ -151,8 +153,10 @@ func checkPassword(json *base.Json, account domain.Account, password, contact st
 
 func createAccount(account, password string) domain.Account {
 	var a domain.Account
+	var pwd []byte
 	if str.IsEmpty(password) {
-		a = domain.Account{Password: string(bcrypt.GenerateFromPassword([]byte(account), bcrypt.DefaultCost)), State: 0}
+		pwd, _ = bcrypt.GenerateFromPassword([]byte(account), bcrypt.DefaultCost)
+		a = domain.Account{Password: string(pwd), State: 0}
 	} else {
 		shaAccount := crypto.SHA256Hex(account)
 		k := []byte(shaAccount[0:32])
@@ -160,13 +164,24 @@ func createAccount(account, password string) domain.Account {
 		hex.Decode(k, k)
 		hex.Decode(i, i)
 		aesPwd, _ := hex.DecodeString(password)
-		plainText, err := crypto.AesDecrypt(aesPwd, k[:16])
+		plainText, err := crypto.AesDecrypt(aesPwd, k[:16], i[:16])
 		if err != nil {
 			return a
 		}
-		a = domain.Account{Password: string(bcrypt.GenerateFromPassword([]byte(plainText), bcrypt.DefaultCost)), State: 0}
+		pwd, _ = bcrypt.GenerateFromPassword([]byte(plainText), bcrypt.DefaultCost)
 	}
-	orm.NewOrm().Insert(&a)
+	a = domain.Account{Password: string(pwd), State: 0}
+	user := domain.User{NickName: account, Avatar: "default_avatar.png", IsVip: 0, VipLevel: 1, Type: 1}
+	o := orm.NewOrm()
+	o.Begin()
+	accountId, createAccountErr := o.Insert(&a)
+	user.AccountId = accountId
+	_, createUserErr := o.Insert(&user)
+	if createAccountErr != nil || createUserErr != nil {
+		o.Rollback()
+	} else {
+		o.Commit()
+	}
 	return a
 }
 
@@ -218,11 +233,13 @@ func LoginWithCode(mobile, code string, request *http.Request, writer http.Respo
 		mobileAccount := dao.GetMobileByNumber(mobile)
 		if mobileAccount.AccountId == 0 {
 			account = createAccount(mobile, "")
+			m := domain.Mobile{AccountId: account.AccountId, Number: mobile, Auth: 1}
+			orm.NewOrm().Insert(&m)
 		} else if mobileAccount.Auth == 0 {
 			json.SetError("CONTACT_NOT_AUTH")
 			return json
 		} else {
-			account := dao.GetAccount(mobileAccount.AccountId)
+			account = dao.GetAccount(mobileAccount.AccountId)
 			if account.AccountId == 0 || account.State == 1 {
 				json.SetError("ABNORMAL_ACCOUNT")
 				return json

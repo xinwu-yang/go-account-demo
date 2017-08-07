@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"encoding/hex"
 	"com.cxria/utils/crypto"
+	"time"
 )
 
 func main() {
@@ -15,6 +16,9 @@ func main() {
 	hex.Decode(i, i)
 	x, _ := hex.DecodeString("90d44eeb5cd0ba3f6b84cb0d19a4f897")
 	fmt.Println(x)
-	y, _ := crypto.AesDecrypt(x, k[:16])
+	y, _ := crypto.AesDecrypt(x, k[:16],i[:16])
 	fmt.Println(string(y))
+
+	//time.LoadLocation("Local")
+	fmt.Println(time.Now())
 }

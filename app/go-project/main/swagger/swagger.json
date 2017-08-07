@@ -32,12 +32,27 @@
                             "$ref": "#/definitions/controllers.LoginParam"
                         }
                     }
+                ]
+            }
+        },
+        "/account/loginWithCode": {
+            "post": {
+                "tags": [
+                    "account"
                 ],
-                "responses": {
-                    "200": {
-                        "description": "{string} {\"b\" : 1}"
+                "description": "手机验证码登录",
+                "operationId": "AccountController.验证码登录",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "手机账号\u003cbr\u003e验证码",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.LoginWithCodeParam"
+                        }
                     }
-                }
+                ]
             }
         },
         "/account/sendAuthEmail": {
@@ -103,6 +118,18 @@
                     "type": "string"
                 },
                 "Password": {
+                    "type": "string"
+                }
+            }
+        },
+        "controllers.LoginWithCodeParam": {
+            "title": "SendSmsCodeParam",
+            "type": "object",
+            "properties": {
+                "Code": {
+                    "type": "string"
+                },
+                "Mobile": {
                     "type": "string"
                 }
             }

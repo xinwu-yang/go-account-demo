@@ -28,10 +28,16 @@ type LoginParam struct {
 	AreaCode string
 }
 
+type LoginWithCodeParam struct {
+	SendSmsCodeParam
+	Code string `valid:"Length(6)"`
+}
+
 func (a *AccountController) URLMapping() {
 	a.Mapping("sendAuthEmail", a.SendAuthEmail)
 	a.Mapping("sendSmsCode", a.SendSmsCode)
 	a.Mapping("login", a.Login)
+	a.Mapping("loginWithCode", a.LoginWithCode)
 }
 
 // @Title 发送邮件
@@ -77,7 +83,6 @@ func (a *AccountController) SendSmsCode() {
 // @Title 登录
 // @Description 手机/邮箱/昵称登录
 // @Param   body body     LoginParam true "账号<br>密码<br>区号"
-// @Success 200  {string} {"b" : 1}
 // @router /login [post]
 func (a *AccountController) Login() {
 	var param LoginParam
@@ -91,5 +96,24 @@ func (a *AccountController) Login() {
 		return
 	}
 	j := service.LoginWithPassword(param.Account, param.Password, param.AreaCode, a.Ctx.Request, a.Ctx.ResponseWriter.ResponseWriter)
+	a.Ctx.WriteString(j.String())
+}
+
+// @Title 验证码登录
+// @Description 手机验证码登录
+// @Param   body body     LoginWithCodeParam true "手机账号<br>验证码"
+// @router /loginWithCode [post]
+func (a *AccountController) LoginWithCode() {
+	var param LoginWithCodeParam
+	json.Unmarshal(a.Ctx.Input.RequestBody, &param)
+	valid := validation.Validation{}
+	b, _ := valid.Valid(&param)
+	if !b {
+		j := base.GetJson()
+		j.ErrorArray = valid.Errors
+		a.Ctx.WriteString(j.String())
+		return
+	}
+	j := service.LoginWithCode(param.Mobile, param.Code, a.Ctx.Request, a.Ctx.ResponseWriter.ResponseWriter)
 	a.Ctx.WriteString(j.String())
 }

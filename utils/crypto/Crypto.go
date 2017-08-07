@@ -45,13 +45,12 @@ func AesEncrypt(origData, key []byte, iv []byte) ([]byte, error) {
 	return crypted, nil
 }
 
-func AesDecrypt(crypted, key []byte) ([]byte, error) {
+func AesDecrypt(crypted, key []byte, iv []byte) ([]byte, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
 	}
-	blockSize := block.BlockSize()
-	blockMode := cipher.NewCBCDecrypter(block, key[:blockSize])
+	blockMode := cipher.NewCBCDecrypter(block, iv)
 	origData := make([]byte, len(crypted))
 	// origData := crypted
 	blockMode.CryptBlocks(origData, crypted)

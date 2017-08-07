@@ -30,7 +30,7 @@ func (json *Json) String() string {
 	if json.ErrorArray != nil {
 		returnData["ec"] = json.ErrorArray
 	}
-	if str.IsEmpty(json.Message) {
+	if !str.IsEmpty(json.Message) {
 		returnData["msg"] = json.Message
 	}
 	b, _ := j.Marshal(returnData)

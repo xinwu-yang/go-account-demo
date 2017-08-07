@@ -28,8 +28,8 @@ type Session struct {
 	AccountId  int64
 	UserAgent  string
 	Token      string
-	LoginTime  time.Time
-	LogoutTime time.Time
+	LoginTime  time.Time `orm:"auto_now_add;type(datetime)"`
+	LogoutTime time.Time `orm:"null"`
 }
 
 type User struct {
@@ -41,7 +41,7 @@ type User struct {
 	IsVip      int
 	VipLevel   int
 	Type       int
-	CreateTime time.Time
+	CreateTime time.Time `orm:"auto_now_add;type(datetime)"`
 }
 
 type Verification struct {

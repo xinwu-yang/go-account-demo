@@ -74,7 +74,7 @@ func GetSessionByToken(token string) (domain.Session, orm.Ormer) {
 
 func GetVerification(code string, number string) domain.Verification {
 	qb := base.GetQueryBuilder()
-	qb.Select("*").From("verification").Where("code = ?").And("number = ?")
+	qb.Select("*").From("verification").Where("code = ?").And("contact = ?")
 	o := orm.NewOrm()
 	var verification domain.Verification
 	err := o.Raw(qb.String(), code, number).QueryRow(&verification)

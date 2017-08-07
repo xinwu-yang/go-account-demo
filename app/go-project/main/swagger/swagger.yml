@@ -24,9 +24,19 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/controllers.LoginParam'
-      responses:
-        "200":
-          description: '{string} {"b" : 1}'
+  /account/loginWithCode:
+    post:
+      tags:
+      - account
+      description: 手机验证码登录
+      operationId: AccountController.验证码登录
+      parameters:
+      - in: body
+        name: body
+        description: 手机账号<br>验证码
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.LoginWithCodeParam'
   /account/sendAuthEmail:
     post:
       tags:
@@ -69,6 +79,14 @@ definitions:
       AreaCode:
         type: string
       Password:
+        type: string
+  controllers.LoginWithCodeParam:
+    title: SendSmsCodeParam
+    type: object
+    properties:
+      Code:
+        type: string
+      Mobile:
         type: string
   controllers.SendAuthEmailParam:
     title: SendAuthEmailParam
