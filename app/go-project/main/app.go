@@ -4,9 +4,9 @@ import "github.com/astaxie/beego"
 import (
 	"com.cxria/app/go-project/main/configure"
 	"runtime"
-	"fmt"
 	"com.cxria/app/go-project/main/routers"
 	"com.cxria/app/go-project/main/filters"
+	"github.com/astaxie/beego/logs"
 )
 
 func init() {
@@ -16,8 +16,15 @@ func init() {
 }
 
 func main() {
+	logs.EnableFuncCallDepth(true)
+	logs.Async()
+
+	//level 6 = info
+	logs.SetLogger(logs.AdapterConsole, `{"level":7}`)
+	logs.SetLogger(logs.AdapterFile, `{"filename":"/var/ftp/logs/go.log","level":7,"daily":true}`)
+
 	//项目配置在beego.BConfig中
-	fmt.Println("CPU Num:", runtime.NumCPU())
+	logs.Informational("CPU Num:", runtime.NumCPU())
 	beego.BConfig.AppName = "GoProject"
 	beego.BConfig.RunMode = "dev"
 	beego.BConfig.CopyRequestBody = true

@@ -6,10 +6,17 @@ import (
 	"com.cxria/base"
 	"encoding/json"
 	"github.com/astaxie/beego/validation"
+	"com.cxria/utils/mail"
 )
 
 type AccountController struct {
 	beego.Controller
+}
+
+type SendEmailParam struct {
+	To      string `valid:"Email; MaxSize(100)"`
+	Html    string `valid:"MinSize(1);"`
+	Subject string `valid:"MinSize(1);"`
 }
 
 type SendAuthEmailParam struct {
@@ -35,12 +42,34 @@ type LoginWithCodeParam struct {
 
 func (a *AccountController) URLMapping() {
 	a.Mapping("sendAuthEmail", a.SendAuthEmail)
+	a.Mapping("sendEmail", a.SendEmail)
 	a.Mapping("sendSmsCode", a.SendSmsCode)
 	a.Mapping("login", a.Login)
 	a.Mapping("loginWithCode", a.LoginWithCode)
 }
 
 // @Title 发送邮件
+// @Description 发送Html邮件
+// @Param   body body     SendEmailParam true "收件人<br>收件内容<br>标题"
+// @Success 200  {string} {"b" : 1}
+// @router /sendEmail [post]
+func (a *AccountController) SendEmail() {
+	var param SendEmailParam
+	json.Unmarshal(a.Ctx.Input.RequestBody, &param)
+	valid := validation.Validation{}
+	b, _ := valid.Valid(&param)
+	if !b {
+		j := base.GetJson()
+		j.ErrorArray = valid.Errors
+		a.Ctx.WriteString(j.String())
+		return
+	}
+	mail.Send(param.To, param.Html, param.Subject)
+	j := base.Json{Ok: 1}
+	a.Ctx.WriteString(j.String())
+}
+
+// @Title 发送验证邮件
 // @Description 发送认证邮件和忘记密码
 // @Param   body body     SendAuthEmailParam true "账号Id<br>邮件地址<br>邮件类型：1=邮箱认证，2=忘记密码"
 // @Success 200  {string} {"b" : 1}

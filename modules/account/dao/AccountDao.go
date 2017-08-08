@@ -4,7 +4,7 @@ import (
 	"com.cxria/modules/account/domain"
 	"com.cxria/base"
 	"github.com/astaxie/beego/orm"
-	"github.com/sirupsen/logrus"
+	"github.com/astaxie/beego/logs"
 )
 
 func GetEmailByAddress(address string) domain.Email {
@@ -14,7 +14,7 @@ func GetEmailByAddress(address string) domain.Email {
 	var email domain.Email
 	err := o.Raw(qb.String(), address).QueryRow(&email)
 	if err != nil {
-		logrus.Error(err)
+		logs.Error(err)
 		return domain.Email{}
 	}
 	return email
@@ -27,7 +27,7 @@ func GetEmailByAccountId(accountId int64) domain.Email {
 	var email domain.Email
 	err := o.Raw(qb.String(), accountId).QueryRow(&email)
 	if err != nil {
-		logrus.Error(err)
+		logs.Error(err)
 		return domain.Email{}
 	}
 	return email
@@ -40,7 +40,7 @@ func GetMobileByNumber(number string) domain.Mobile {
 	var mobile domain.Mobile
 	err := o.Raw(qb.String(), number).QueryRow(&mobile)
 	if err != nil {
-		logrus.Error(err)
+		logs.Error(err)
 		return domain.Mobile{}
 	}
 	return mobile
@@ -53,7 +53,7 @@ func GetMobileByAccountId(accountId int64) domain.Mobile {
 	var mobile domain.Mobile
 	err := o.Raw(qb.String(), accountId).QueryRow(&mobile)
 	if err != nil {
-		logrus.Error(err)
+		logs.Error(err)
 		return domain.Mobile{}
 	}
 	return mobile
@@ -66,7 +66,7 @@ func GetSessionByToken(token string) (domain.Session, orm.Ormer) {
 	var session domain.Session
 	err := o.Raw(qb.String(), token).QueryRow(&session)
 	if err != nil {
-		logrus.Error(err)
+		logs.Error(err)
 		return domain.Session{}, o
 	}
 	return session, o
@@ -79,7 +79,7 @@ func GetVerification(code string, number string) domain.Verification {
 	var verification domain.Verification
 	err := o.Raw(qb.String(), code, number).QueryRow(&verification)
 	if err != nil {
-		logrus.Error(err)
+		logs.Error(err)
 		return domain.Verification{}
 	}
 	return verification
@@ -92,7 +92,7 @@ func GetUserByNickName(nickName string) domain.User {
 	var user domain.User
 	err := o.Raw(qb.String(), nickName).QueryRow(&user)
 	if err != nil {
-		logrus.Error(err)
+		logs.Error(err)
 		return domain.User{}
 	}
 	return user

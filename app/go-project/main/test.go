@@ -1,24 +1,17 @@
 package main
 
 import (
+	"net"
 	"fmt"
-	"encoding/hex"
-	"com.cxria/utils/crypto"
-	"time"
+	"bufio"
 )
 
 func main() {
-	shaName := crypto.SHA256Hex("xinwuy")
-	fmt.Println(shaName)
-	k := []byte(shaName[0:32])
-	i := []byte(shaName[32:64])
-	hex.Decode(k, k)
-	hex.Decode(i, i)
-	x, _ := hex.DecodeString("90d44eeb5cd0ba3f6b84cb0d19a4f897")
-	fmt.Println(x)
-	y, _ := crypto.AesDecrypt(x, k[:16],i[:16])
-	fmt.Println(string(y))
-
-	//time.LoadLocation("Local")
-	fmt.Println(time.Now())
+	conn, err := net.Dial("tcp4", "pop.qq.com:995")
+	if err != nil {
+		fmt.Println("Dial : ", err)
+		return
+	}
+	line,_,err := bufio.NewReader(conn).ReadLine()
+	fmt.Println(string(line))
 }

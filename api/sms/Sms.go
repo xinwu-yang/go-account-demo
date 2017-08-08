@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"io/ioutil"
 	"encoding/json"
-	"github.com/sirupsen/logrus"
+	"github.com/astaxie/beego/logs"
 )
 
 const (
@@ -53,6 +53,6 @@ func SendByYzx(mobile, code string) bool {
 	if resultMap["resp"]["respCode"] == "000000" {
 		return true
 	}
-	logrus.Error(string(body))
+	logs.Error(string(body))
 	return false
 }

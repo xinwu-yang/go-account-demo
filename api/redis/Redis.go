@@ -2,7 +2,7 @@ package redis
 
 import (
 	"github.com/garyburd/redigo/redis"
-	"github.com/sirupsen/logrus"
+	"github.com/astaxie/beego/logs"
 )
 
 var Pool redis.Pool
@@ -18,7 +18,7 @@ func Get(key string) *string {
 		var value string
 		value, err := redis.String(conn.Do("GET", key))
 		if err != nil {
-			logrus.Error(err)
+			logs.Error(err)
 			return nil
 		}
 		return &value
@@ -32,7 +32,7 @@ func Set(key string, value string) {
 		defer conn.Close()
 		_, err := conn.Do("SET", key, value)
 		if err != nil {
-			logrus.Error(err)
+			logs.Error(err)
 		}
 	}
 }
@@ -43,7 +43,7 @@ func SetEx(key string, ex int, value string) {
 		defer conn.Close()
 		_, err := conn.Do("SETEX", key, ex, value)
 		if err != nil {
-			logrus.Error(err)
+			logs.Error(err)
 		}
 	}
 }
@@ -55,7 +55,7 @@ func Exists(key string) bool {
 		var exist bool
 		exist, err := redis.Bool(conn.Do("EXISTS", key))
 		if err != nil {
-			logrus.Error(err)
+			logs.Error(err)
 			return false
 		}
 		return exist

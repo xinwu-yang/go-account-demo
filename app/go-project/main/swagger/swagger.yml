@@ -42,7 +42,7 @@ paths:
       tags:
       - account
       description: 发送认证邮件和忘记密码
-      operationId: AccountController.发送邮件
+      operationId: AccountController.发送验证邮件
       parameters:
       - in: body
         name: body
@@ -50,6 +50,22 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/controllers.SendAuthEmailParam'
+      responses:
+        "200":
+          description: '{string} {"b" : 1}'
+  /account/sendEmail:
+    post:
+      tags:
+      - account
+      description: 发送Html邮件
+      operationId: AccountController.发送邮件
+      parameters:
+      - in: body
+        name: body
+        description: 收件人<br>收件内容<br>标题
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.SendEmailParam'
       responses:
         "200":
           description: '{string} {"b" : 1}'
@@ -100,6 +116,16 @@ definitions:
       EmailType:
         type: integer
         format: int64
+  controllers.SendEmailParam:
+    title: SendEmailParam
+    type: object
+    properties:
+      Html:
+        type: string
+      Subject:
+        type: string
+      To:
+        type: string
   controllers.SendSmsCodeParam:
     title: SendSmsCodeParam
     type: object
