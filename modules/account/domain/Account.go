@@ -2,13 +2,13 @@ package domain
 
 import (
 	"time"
-	_ "github.com/astaxie/beego/orm"
+	"github.com/astaxie/beego/orm"
 )
 
 type Account struct {
 	AccountId int64 `orm:"auto"`
 	Password  string
-	State     int
+	State     int `orm:"default(0)"`
 }
 
 type Email struct {
@@ -35,12 +35,10 @@ type Session struct {
 type User struct {
 	AccountId  int64 `orm:"pk"`
 	NickName   string
-	Avatar     string
+	Avatar     string `orm:"default(default_avatar.png)"`
 	RealName   string
 	Address    string
-	IsVip      int
-	VipLevel   int
-	Type       int
+	Type       int `orm:"default(1)"`
 	CreateTime time.Time `orm:"auto_now_add;type(datetime)"`
 }
 
@@ -49,4 +47,13 @@ type Verification struct {
 	Code           string `orm:"size(6)"`
 	Contact        string
 	Expiry         time.Time
+}
+
+func init() {
+	orm.RegisterModel(new(Account),
+		new(Email),
+		new(Mobile),
+		new(Verification),
+		new(Session),
+		new(User))
 }

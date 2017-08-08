@@ -156,7 +156,7 @@ func createAccount(account, password string) domain.Account {
 	var pwd []byte
 	if str.IsEmpty(password) {
 		pwd, _ = bcrypt.GenerateFromPassword([]byte(account), bcrypt.DefaultCost)
-		a = domain.Account{Password: string(pwd), State: 0}
+		a = domain.Account{Password: string(pwd)}
 	} else {
 		shaAccount := crypto.SHA256Hex(account)
 		k := []byte(shaAccount[0:32])
@@ -170,8 +170,8 @@ func createAccount(account, password string) domain.Account {
 		}
 		pwd, _ = bcrypt.GenerateFromPassword([]byte(plainText), bcrypt.DefaultCost)
 	}
-	a = domain.Account{Password: string(pwd), State: 0}
-	user := domain.User{NickName: account, Avatar: "default_avatar.png", IsVip: 0, VipLevel: 1, Type: 1}
+	a = domain.Account{Password: string(pwd)}
+	user := domain.User{NickName: account, Type: 1}
 	o := orm.NewOrm()
 	o.Begin()
 	accountId, createAccountErr := o.Insert(&a)
