@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	account  string = "grassroot"
+	account  string = "gaiamount"
 	password string = "chengxun"
 	host     string = "192.168.1.21"
 	port     string = "3306"
