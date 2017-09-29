@@ -21,8 +21,8 @@ type SendEmailParam struct {
 
 type SendAuthEmailParam struct {
 	Email     string `valid:"Email; MaxSize(100)"`
-	EmailType int `valid:"Min(1); Max(2)"`
-	AccountId int `valid:"Min(1); Max(999999999)"`
+	EmailType int    `valid:"Min(1); Max(2)"`
+	AccountId int    `valid:"Min(1); Max(999999999)"`
 }
 
 type SendSmsCodeParam struct {

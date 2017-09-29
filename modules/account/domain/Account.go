@@ -3,12 +3,13 @@ package domain
 import (
 	"time"
 	"github.com/astaxie/beego/orm"
+	"com.cxria/modules/stream/domain"
 )
 
 type Account struct {
 	AccountId int64 `orm:"auto"`
 	Password  string
-	State     int `orm:"default(0)"`
+	State     int   `orm:"default(0)"`
 }
 
 type Email struct {
@@ -24,7 +25,7 @@ type Mobile struct {
 }
 
 type Session struct {
-	SessionId  int64 `orm:"auto"`
+	SessionId  int64     `orm:"auto"`
 	AccountId  int64
 	UserAgent  string
 	Token      string
@@ -33,12 +34,12 @@ type Session struct {
 }
 
 type User struct {
-	AccountId  int64 `orm:"pk"`
+	AccountId  int64     `orm:"pk"`
 	NickName   string
-	Avatar     string `orm:"default(default_avatar.png)"`
+	Avatar     string    `orm:"default(default_avatar.png)"`
 	RealName   string
 	Address    string
-	Type       int `orm:"default(1)"`
+	Type       int       `orm:"default(1)"`
 	CreateTime time.Time `orm:"auto_now_add;type(datetime)"`
 }
 
@@ -55,5 +56,5 @@ func init() {
 		new(Mobile),
 		new(Verification),
 		new(Session),
-		new(User))
+		new(User), new(domain.Stream), new(domain.Subtitle))
 }

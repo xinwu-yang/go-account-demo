@@ -12,10 +12,18 @@ import (
 	"com.cxria/app/go-project/main/controllers"
 )
 
-func Config() {
+func init() {
 	ns := beego.NewNamespace("/v1",
-		beego.NSNamespace("/account", beego.NSInclude(
-			&controllers.AccountController{},
-		)))
+		beego.NSNamespace("/account",
+			beego.NSInclude(
+				&controllers.AccountController{},
+			),
+		),
+		beego.NSNamespace("/stream",
+			beego.NSInclude(
+				&controllers.StreamController{},
+			),
+		),
+	)
 	beego.AddNamespace(ns)
 }

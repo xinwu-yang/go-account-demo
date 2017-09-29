@@ -1,17 +1,16 @@
 package main
 
-import "github.com/astaxie/beego"
 import (
+	"github.com/astaxie/beego"
 	"com.cxria/app/go-project/main/configure"
 	"runtime"
-	"com.cxria/app/go-project/main/routers"
 	"com.cxria/app/go-project/main/filters"
 	"github.com/astaxie/beego/logs"
+	_ "com.cxria/app/go-project/main/routers"
 )
 
 func init() {
 	configure.ConfigDataSource()
-	routers.Config()
 	filters.Config()
 }
 

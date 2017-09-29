@@ -23,7 +23,7 @@ paths:
         description: 账号<br>密码<br>区号
         required: true
         schema:
-          $ref: '#/definitions/controllers.LoginParam'
+          $ref: '#/definitions/.LoginParam'
   /account/loginWithCode:
     post:
       tags:
@@ -36,7 +36,7 @@ paths:
         description: 手机账号<br>验证码
         required: true
         schema:
-          $ref: '#/definitions/controllers.LoginWithCodeParam'
+          $ref: '#/definitions/.LoginWithCodeParam'
   /account/sendAuthEmail:
     post:
       tags:
@@ -49,7 +49,7 @@ paths:
         description: 账号Id<br>邮件地址<br>邮件类型：1=邮箱认证，2=忘记密码
         required: true
         schema:
-          $ref: '#/definitions/controllers.SendAuthEmailParam'
+          $ref: '#/definitions/.SendAuthEmailParam'
       responses:
         "200":
           description: '{string} {"b" : 1}'
@@ -65,7 +65,7 @@ paths:
         description: 收件人<br>收件内容<br>标题
         required: true
         schema:
-          $ref: '#/definitions/controllers.SendEmailParam'
+          $ref: '#/definitions/.SendEmailParam'
       responses:
         "200":
           description: '{string} {"b" : 1}'
@@ -81,54 +81,36 @@ paths:
         description: 手机号码
         required: true
         schema:
-          $ref: '#/definitions/controllers.SendSmsCodeParam'
+          $ref: '#/definitions/.SendSmsCodeParam'
+      responses:
+        "200":
+          description: '{string} {"b" : 1}'
+  /stream/createStream/{url}:
+    get:
+      tags:
+      - stream
+      description: 创建一条相对时间的直播流
+      operationId: StreamController.创建直播流
+      parameters:
+      - in: path
+        name: url
+        description: 收件人<br>收件内容<br>标题
+        required: true
+        schema:
+          $ref: '#/definitions/.CreateStreamParam'
       responses:
         "200":
           description: '{string} {"b" : 1}'
 definitions:
-  controllers.LoginParam:
-    title: LoginParam
+  .CreateStreamParam:
     type: object
-    properties:
-      Account:
-        type: string
-      AreaCode:
-        type: string
-      Password:
-        type: string
-  controllers.LoginWithCodeParam:
-    title: SendSmsCodeParam
+  .LoginParam:
     type: object
-    properties:
-      Code:
-        type: string
-      Mobile:
-        type: string
-  controllers.SendAuthEmailParam:
-    title: SendAuthEmailParam
+  .LoginWithCodeParam:
     type: object
-    properties:
-      AccountId:
-        type: integer
-        format: int64
-      Email:
-        type: string
-      EmailType:
-        type: integer
-        format: int64
-  controllers.SendEmailParam:
-    title: SendEmailParam
+  .SendAuthEmailParam:
     type: object
-    properties:
-      Html:
-        type: string
-      Subject:
-        type: string
-      To:
-        type: string
-  controllers.SendSmsCodeParam:
-    title: SendSmsCodeParam
+  .SendEmailParam:
     type: object
-    properties:
-      Mobile:
-        type: string
+  .SendSmsCodeParam:
+    type: object

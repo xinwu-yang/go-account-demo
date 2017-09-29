@@ -1,2 +1,4 @@
 app/go-project/main/routers/commentsRouter*
 app/go-project/main/lastupdate.tmp
+app/go-project/main/main
+swagger/*

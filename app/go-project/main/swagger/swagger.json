@@ -29,7 +29,7 @@
                         "description": "账号\u003cbr\u003e密码\u003cbr\u003e区号",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controllers.LoginParam"
+                            "$ref": "#/definitions/.LoginParam"
                         }
                     }
                 ]
@@ -49,7 +49,7 @@
                         "description": "手机账号\u003cbr\u003e验证码",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controllers.LoginWithCodeParam"
+                            "$ref": "#/definitions/.LoginWithCodeParam"
                         }
                     }
                 ]
@@ -69,7 +69,7 @@
                         "description": "账号Id\u003cbr\u003e邮件地址\u003cbr\u003e邮件类型：1=邮箱认证，2=忘记密码",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controllers.SendAuthEmailParam"
+                            "$ref": "#/definitions/.SendAuthEmailParam"
                         }
                     }
                 ],
@@ -94,7 +94,7 @@
                         "description": "收件人\u003cbr\u003e收件内容\u003cbr\u003e标题",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controllers.SendEmailParam"
+                            "$ref": "#/definitions/.SendEmailParam"
                         }
                     }
                 ],
@@ -119,7 +119,32 @@
                         "description": "手机号码",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controllers.SendSmsCodeParam"
+                            "$ref": "#/definitions/.SendSmsCodeParam"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{string} {\"b\" : 1}"
+                    }
+                }
+            }
+        },
+        "/stream/createStream/{url}": {
+            "get": {
+                "tags": [
+                    "stream"
+                ],
+                "description": "创建一条相对时间的直播流",
+                "operationId": "StreamController.创建直播流",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "url",
+                        "description": "收件人\u003cbr\u003e收件内容\u003cbr\u003e标题",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/.CreateStreamParam"
                         }
                     }
                 ],
@@ -132,73 +157,23 @@
         }
     },
     "definitions": {
-        "controllers.LoginParam": {
-            "title": "LoginParam",
-            "type": "object",
-            "properties": {
-                "Account": {
-                    "type": "string"
-                },
-                "AreaCode": {
-                    "type": "string"
-                },
-                "Password": {
-                    "type": "string"
-                }
-            }
+        ".CreateStreamParam": {
+            "type": "object"
         },
-        "controllers.LoginWithCodeParam": {
-            "title": "SendSmsCodeParam",
-            "type": "object",
-            "properties": {
-                "Code": {
-                    "type": "string"
-                },
-                "Mobile": {
-                    "type": "string"
-                }
-            }
+        ".LoginParam": {
+            "type": "object"
         },
-        "controllers.SendAuthEmailParam": {
-            "title": "SendAuthEmailParam",
-            "type": "object",
-            "properties": {
-                "AccountId": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "Email": {
-                    "type": "string"
-                },
-                "EmailType": {
-                    "type": "integer",
-                    "format": "int64"
-                }
-            }
+        ".LoginWithCodeParam": {
+            "type": "object"
         },
-        "controllers.SendEmailParam": {
-            "title": "SendEmailParam",
-            "type": "object",
-            "properties": {
-                "Html": {
-                    "type": "string"
-                },
-                "Subject": {
-                    "type": "string"
-                },
-                "To": {
-                    "type": "string"
-                }
-            }
+        ".SendAuthEmailParam": {
+            "type": "object"
         },
-        "controllers.SendSmsCodeParam": {
-            "title": "SendSmsCodeParam",
-            "type": "object",
-            "properties": {
-                "Mobile": {
-                    "type": "string"
-                }
-            }
+        ".SendEmailParam": {
+            "type": "object"
+        },
+        ".SendSmsCodeParam": {
+            "type": "object"
         }
     }
 }
