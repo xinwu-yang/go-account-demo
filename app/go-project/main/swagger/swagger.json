@@ -141,10 +141,87 @@
                     {
                         "in": "path",
                         "name": "url",
-                        "description": "收件人\u003cbr\u003e收件内容\u003cbr\u003e标题",
-                        "required": true,
+                        "description": "播放地址，请urlEncode",
                         "schema": {
-                            "$ref": "#/definitions/.CreateStreamParam"
+                            "$ref": "#/definitions/.true"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{string} {\"b\" : 1}"
+                    }
+                }
+            }
+        },
+        "/stream/createSubtitle/{streamId}/{content}/{createTime}": {
+            "get": {
+                "tags": [
+                    "stream"
+                ],
+                "description": "创建一条相对时间的直播流字幕",
+                "operationId": "StreamController.创建直播流的字幕",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "streamId",
+                        "description": "流id",
+                        "schema": {
+                            "$ref": "#/definitions/.true"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "content",
+                        "description": "字幕内容，请urlEncode",
+                        "schema": {
+                            "$ref": "#/definitions/.true"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "createTime",
+                        "description": "字幕出现时间，第几秒",
+                        "schema": {
+                            "$ref": "#/definitions/.true"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{string} {\"b\" : 1}"
+                    }
+                }
+            }
+        },
+        "/stream/getStream": {
+            "get": {
+                "tags": [
+                    "stream"
+                ],
+                "description": "获取当前正在直播的流地址",
+                "operationId": "StreamController.获取当前正在直播的流地址",
+                "responses": {
+                    "200": {
+                        "description": "{string} {\"b\" : 1}"
+                    }
+                }
+            }
+        },
+        "/stream/getSubtitles/{streamId}": {
+            "get": {
+                "tags": [
+                    "stream"
+                ],
+                "description": "获取当前正在直播的流的所有字幕",
+                "operationId": "StreamController.获取当前正在直播的流的所有字幕",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "streamId",
+                        "description": "流id",
+                        "schema": {
+                            "$ref": "#/definitions/.true"
                         }
                     }
                 ],
@@ -157,9 +234,6 @@
         }
     },
     "definitions": {
-        ".CreateStreamParam": {
-            "type": "object"
-        },
         ".LoginParam": {
             "type": "object"
         },
@@ -173,6 +247,9 @@
             "type": "object"
         },
         ".SendSmsCodeParam": {
+            "type": "object"
+        },
+        ".true": {
             "type": "object"
         }
     }

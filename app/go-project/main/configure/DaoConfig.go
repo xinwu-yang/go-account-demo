@@ -7,11 +7,16 @@ import (
 )
 
 const (
-	account  string = "gaiamount"
-	password string = "chengxun"
-	host     string = "192.168.1.21"
-	port     string = "3306"
-	db       string = "go"
+	//account  string = "gaiamount"
+	//password string = "chengxun"
+	//host     string = "192.168.1.21"
+
+	account  string = "go"
+	password string = "Chengxun@1806"
+	host     string = "rm-wz9eynjsfx9iqm8tpo.mysql.rds.aliyuncs.com"
+
+	port string = "3306"
+	db   string = "go"
 )
 
 func ConfigDataSource() {
